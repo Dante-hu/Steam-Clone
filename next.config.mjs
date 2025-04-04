@@ -1,4 +1,20 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'firebasestorage.googleapis.com',
+          pathname: '/**',
+        },
 
-export default nextConfig;
+        {
+          protocol: 'https',
+          hostname: 'storage.googleapis.com',
+          pathname: '/steam-clone-b3cbb.firebasestorage.app/**',
+        },
+      ],
+    },
+  };
+  
+  export default nextConfig;
