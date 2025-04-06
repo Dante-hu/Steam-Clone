@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, query, where, setDoc} from 'firebase/firestore';
 import { db } from './firebase';
 
 // Get all documents from a collection
@@ -45,4 +45,11 @@ export async function deleteDocument(collectionName, docId) {
   const docRef = doc(db, collectionName, docId);
   await deleteDoc(docRef);
   return true;
+}
+
+export async function addDocumentID(collectionName, docId, data){
+  const collectionRef = collection(db, collectionName);
+  const docRef = doc(db, collectionName, docId);
+  await setDoc(docRef, data);
+  return docRef.id;
 }
