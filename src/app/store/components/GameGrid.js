@@ -74,7 +74,7 @@ export default function GameGrid() {
         {currentGames.map((game) => (
           <Link
             key={game.id}
-            href={`/game/${game.title.toLowerCase().replace(/\s+/g, '-')}`}
+            href={`/game/${game.id}`}
             className="bg-[#171a21] hover:bg-[#1a1a1a] border border-[#2a3f5a] rounded p-4 transition-colors"
           >
             <div className="relative aspect-[16/9] mb-2">
