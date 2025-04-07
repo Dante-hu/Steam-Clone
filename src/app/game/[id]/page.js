@@ -1,0 +1,251 @@
+'use client';
+
+import { useState, useEffect, use } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { getGameById } from '../../lib/gameService';
+import { getGameImageUrl, getGameGalleryUrls } from '../../lib/firebase';
+
+export default function GamePage({ params }) {
+  const router = useRouter();
+  const [game, setGame] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [boxArtImage, setBoxArtImage] = useState(null);
+  const [screenshots, setScreenshots] = useState([]);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const gameId = use(params).id;
+
+  useEffect(() => {
+    async function fetchGameData() {
+      try {
+        const gameData = await getGameById(gameId);
+        console.log('Game Data:', gameData);
+        setGame(gameData);
+
+        // Fetch box art image
+        const boxArtUrl = await getGameImageUrl(gameId, 'boxart');
+        if (boxArtUrl) {
+          setBoxArtImage(boxArtUrl);
+        }
+
+        // Fetch numbered screenshots
+        const screenshotUrls = await getGameGalleryUrls(gameId);
+        setScreenshots(screenshotUrls);
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching game data:', error);
+        setLoading(false);
+      }
+    }
+    fetchGameData();
+  }, [gameId]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5c7e10]"></div>
+      </div>
+    );
+  }
+
+  if (!game) {
+    return (
+      <div className="min-h-screen bg-[#1b2838] text-white p-8">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-2xl mb-4">Game not found</h1>
+          <button
+            onClick={() => router.back()}
+            className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-4 py-2 rounded"
+          >
+            ← Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#1b2838] text-white p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Back Button */}
+        <button
+          onClick={() => router.back()}
+          className="flex items-center text-[#b8b6b4] hover:text-white mb-6"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Store
+        </button>
+
+        <div className="flex gap-8">
+          {/* Left Column - Game Image and Purchase */}
+          <div className="w-[300px] flex-shrink-0">
+            <div className="bg-[#171a21] p-2 rounded">
+              <div className="relative aspect-[3/4] rounded overflow-hidden">
+                <Image
+                  src={boxArtImage || '/placeholder-game1.svg'}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="mt-4 text-center">
+                <div className="text-2xl font-bold mb-3">
+                  {game.price === 0 ? 'Free' : `$${game.price}`}
+                </div>
+                <button className="w-full bg-[#5c7e10] hover:bg-[#6c8c1e] text-white py-2 rounded mb-2">
+                  Add to Cart
+                </button>
+                <button className="w-full bg-[#2a3f5a] hover:bg-[#3a4f6a] text-white py-2 rounded">
+                  Add to Wishlist
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Game Info */}
+          <div className="flex-grow">
+            {/* Title and Basic Info */}
+            <div className="bg-[#171a21] p-6 rounded mb-6">
+              <h1 className="text-4xl font-bold mb-4">{game.title}</h1>
+              <div className="grid grid-cols-2 gap-4 text-sm text-[#b8b6b4] mt-4">
+                <div>
+                  <p><span className="font-medium">Categories:</span> {game.categories?.join(', ')}</p>
+                  <p><span className="font-medium">Platform:</span> {game.platforms?.join(', ')}</p>
+                </div>
+                <div>
+                  <p><span className="font-medium">Release Date:</span> {game.release_date}</p>
+                  <p>
+                    <span className="font-medium">Reviews:</span>{' '}
+                    <span className="text-[#66c0f4]">👍 {game.positiveReviews}</span>{' '}
+                    <span className="text-[#ff4444]">👎 {game.negativeReviews}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="bg-[#171a21] p-6 rounded mb-6">
+              <h2 className="text-xl font-bold mb-4">About This Game</h2>
+              <div className={`relative ${!isDescriptionExpanded ? 'max-h-[120px]' : 'max-h-full'} overflow-hidden transition-all duration-300`}>
+                <div 
+                  className="text-[#b8b6b4] game-description"
+                  dangerouslySetInnerHTML={{ __html: game.description }}
+                />
+                {!isDescriptionExpanded && (
+                  <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#171a21] to-transparent" />
+                )}
+              </div>
+              <button
+                onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                className="flex items-center justify-center w-full mt-2 text-[#b8b6b4] hover:text-white"
+              >
+                <span className="mr-2">{isDescriptionExpanded ? 'Show Less' : 'Read More'}</span>
+                <svg
+                  className={`w-4 h-4 transform transition-transform ${isDescriptionExpanded ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Screenshots */}
+            {screenshots.length > 0 && (
+              <div className="bg-[#171a21] p-6 rounded mb-6">
+                <h2 className="text-xl font-bold mb-4">Screenshots</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  {screenshots.map((url, index) => (
+                    <div key={index} className="relative aspect-video rounded overflow-hidden">
+                      <Image
+                        src={url}
+                        alt=""
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* System Requirements */}
+            {(game.specs?.minimum || game.specs?.recommended) && (
+              <div className="bg-[#171a21] p-6 rounded">
+                <h2 className="text-xl font-bold mb-4">System Requirements</h2>
+                <div className="grid grid-cols-2 gap-8">
+                  {game.specs?.minimum && (
+                    <div>
+                      <h3 className="font-semibold mb-2">Minimum</h3>
+                      <div className="space-y-2 text-[#b8b6b4]">
+                        <p><span className="font-medium">OS:</span> {game.specs.minimum.os}</p>
+                        <p><span className="font-medium">Processor:</span> {game.specs.minimum.processor}</p>
+                        <p><span className="font-medium">Memory:</span> {game.specs.minimum.memory}</p>
+                        <p><span className="font-medium">Graphics:</span> {game.specs.minimum.graphics}</p>
+                        <p><span className="font-medium">DirectX:</span> {game.specs.minimum.directX}</p>
+                        <p><span className="font-medium">Storage:</span> {game.specs.minimum.storage}</p>
+                        {game.specs.minimum.sound_card && (
+                          <p><span className="font-medium">Sound Card:</span> {game.specs.minimum.sound_card}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {game.specs?.recommended && (
+                    <div>
+                      <h3 className="font-semibold mb-2">Recommended</h3>
+                      <div className="space-y-2 text-[#b8b6b4]">
+                        <p><span className="font-medium">OS:</span> {game.specs.recommended.os}</p>
+                        <p><span className="font-medium">Processor:</span> {game.specs.recommended.processor}</p>
+                        <p><span className="font-medium">Memory:</span> {game.specs.recommended.memory}</p>
+                        <p><span className="font-medium">Graphics:</span> {game.specs.recommended.graphics}</p>
+                        <p><span className="font-medium">DirectX:</span> {game.specs.recommended.directX}</p>
+                        <p><span className="font-medium">Storage:</span> {game.specs.recommended.storage}</p>
+                        {game.specs.recommended.sound_card && (
+                          <p><span className="font-medium">Sound Card:</span> {game.specs.recommended.sound_card}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Add styles for the HTML content */}
+      <style jsx global>{`
+        .game-description h1 {
+          font-size: 1.5rem;
+          font-weight: bold;
+          margin-bottom: 1rem;
+          color: white;
+        }
+        .game-description h2 {
+          font-size: 1.25rem;
+          font-weight: bold;
+          margin-top: 1.5rem;
+          margin-bottom: 0.75rem;
+          color: white;
+        }
+        .game-description p {
+          margin-bottom: 1rem;
+          line-height: 1.6;
+        }
+        .game-description ul {
+          list-style-type: disc;
+          margin-left: 1.5rem;
+          margin-bottom: 1rem;
+        }
+        .game-description li {
+          margin-bottom: 0.5rem;
+        }
+      `}</style>
+    </div>
+  );
+} 

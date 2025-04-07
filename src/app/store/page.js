@@ -3,18 +3,48 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useAuth } from '../lib/AuthContext';
+import { auth } from '../lib/firebase';
+import { signOut, signInWithEmailAndPassword } from 'firebase/auth';
 import FeaturedGames from './components/FeaturedGames';
 import GameGrid from './components/GameGrid';
+import SearchBar from './components/SearchBar';
 
 export default function StorePage() {
   const [showLogin, setShowLogin] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { user } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
 
   const handleSearch = (e) => {
     if (e.key === 'Enter') {
-      // Here you would typically handle the search
       console.log('Searching for:', searchQuery);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setShowUserMenu(false);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      setShowLogin(false);
+      setEmail('');
+      setPassword('');
+      setLoginError('');
+    } catch (error) {
+      setLoginError(error.message);
     }
   };
 
@@ -52,14 +82,42 @@ export default function StorePage() {
             </Link>
           </div>
 
-          {/* Login Button */}
+          {/* User Menu or Login Button */}
           <div className="ml-auto">
-            <button 
-              onClick={() => setShowLogin(true)}
-              className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-4 py-2 rounded"
-            >
-              Login
-            </button>
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center space-x-2 text-[#b8b6b4] hover:text-white"
+                >
+                  <span>{user.email}</span>
+                  <span>▼</span>
+                </button>
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-[#171a21] border border-[#2a3f5a] rounded shadow-lg z-50">
+                    <Link
+                      href="/library"
+                      className="block px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a]"
+                    >
+                      Library
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a]"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button 
+                onClick={() => setShowLogin(true)}
+                className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-4 py-2 rounded"
+              >
+                Login
+              </button>
+            )}
           </div>
         </div>
       </nav>
@@ -68,7 +126,7 @@ export default function StorePage() {
       <nav className="bg-[#171a21] h-12 flex items-center px-4 border-t border-[#2a3f5a] mt-2.5">
         <div className="container mx-auto flex items-center justify-center">
           {/* Categories and Search */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-6">
             {/* Categories Dropdown */}
             <div className="relative">
               <button 
@@ -102,15 +160,8 @@ export default function StorePage() {
             </Link>
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-xs mx-4">
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearch}
-                className="w-full bg-[#316282] text-white px-4 py-2 rounded placeholder-[#b8b6b4] text-sm"
-              />
+            <div className="flex items-center">
+              <SearchBar />
             </div>
           </div>
         </div>
@@ -146,27 +197,39 @@ export default function StorePage() {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Login</h2>
               <button 
-                onClick={() => setShowLogin(false)}
+                onClick={() => {
+                  setShowLogin(false);
+                  setLoginError('');
+                }}
                 className="text-[#b8b6b4] hover:text-white"
               >
                 ✕
               </button>
             </div>
-            <form className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="block text-sm text-[#b8b6b4] mb-1">Username</label>
+                <label className="block text-sm text-[#b8b6b4] mb-1">Email</label>
                 <input
-                  type="text"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-[#316282] text-white px-4 py-2 rounded"
+                  required
                 />
               </div>
               <div>
                 <label className="block text-sm text-[#b8b6b4] mb-1">Password</label>
                 <input
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-[#316282] text-white px-4 py-2 rounded"
+                  required
                 />
               </div>
+              {loginError && (
+                <p className="text-red-500 text-sm">{loginError}</p>
+              )}
               <div className="flex justify-between items-center">
                 <button
                   type="submit"
