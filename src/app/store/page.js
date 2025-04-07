@@ -19,6 +19,8 @@ export default function StorePage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [ratingValue, setRatingValue] = useState(0);
 
   const handleSearch = (e) => {
     if (e.key === 'Enter') {
@@ -49,9 +51,24 @@ export default function StorePage() {
   };
 
   const categories = [
-    'Action', 'Adventure', 'RPG', 'Strategy', 'Simulation',
+    'All', 'Action', 'Adventure', 'RPG', 'Strategy', 'Simulation',
     'Sports', 'Racing', 'Indie', 'Casual', 'Multiplayer'
   ];
+
+  const handleRatingChange = (event) => {
+    setRatingValue(parseFloat(event.target.value)); 
+  };  
+
+  const handleApplyRating = () => {
+    setShowRatingModal(false);
+    console.log('Applied Rating:', ratingValue);
+    //filter
+  };
+
+  const handleCancelRating = () => {
+    setShowRatingModal(false);
+    setRatingValue(0); // Reset the rating to default
+  };
 
   return (
     <div className="min-h-screen bg-[#1b2838] text-white flex flex-col">
@@ -134,10 +151,12 @@ export default function StorePage() {
                 className="text-[#b8b6b4] hover:text-white text-sm flex items-center"
               >
                 Categories
-                <span className="ml-1">▼</span>
               </button>
               {showCategories && (
                 <div className="absolute top-full left-0 mt-1 bg-[#171a21] border border-[#2a3f5a] rounded shadow-lg z-50 w-48">
+                  <div className="block px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a] text-sm cursor-pointer" onClick={() => setShowRatingModal(true)}>
+                  <span className="text-sm">Rating</span> <span style={{fontSize: '0.5656rem'}}>(Filter Category by Rating)</span>
+                  </div>
                   {categories.map((category) => (
                     <Link
                       key={category}
@@ -147,6 +166,8 @@ export default function StorePage() {
                       {category}
                     </Link>
                   ))}
+                  {/* Rating Option */}
+                  
                 </div>
               )}
             </div>
@@ -190,64 +211,58 @@ export default function StorePage() {
         </div>
       </footer>
 
-      {/* Login Modal */}
-      {showLogin && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#171a21] p-6 rounded-lg w-96">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Login</h2>
-              <button 
-                onClick={() => {
-                  setShowLogin(false);
-                  setLoginError('');
-                }}
-                className="text-[#b8b6b4] hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-sm text-[#b8b6b4] mb-1">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#316282] text-white px-4 py-2 rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-[#b8b6b4] mb-1">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#316282] text-white px-4 py-2 rounded"
-                  required
-                />
-              </div>
-              {loginError && (
-                <p className="text-red-500 text-sm">{loginError}</p>
-              )}
-              <div className="flex justify-between items-center">
-                <button
-                  type="submit"
-                  className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-6 py-2 rounded"
-                >
-                  Login
-                </button>
-                <Link 
-                  href="/register" 
-                  className="text-[#b8b6b4] hover:text-white text-sm"
-                >
-                  Register
-                </Link>
-              </div>
-            </form>
-          </div>
+{/* Rating Modal */}
+{showRatingModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-[#171a21] p-6 rounded-lg w-96">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Select Rating</h2>
+        <button 
+          onClick={handleCancelRating}
+          className="text-[#b8b6b4] hover:text-white"
+        >
+          ✕
+        </button>
+      </div>
+      <div className="space-y-4">
+        <label className="block text-sm text-[#b8b6b4] mb-1">Rating</label>
+        <input
+          type="range"
+          min="0"
+          max="10"
+          step="0.1"
+          value={ratingValue}
+          onChange={handleRatingChange}
+          className="w-full"
+        />
+        <div className="flex justify-between text-sm">
+          <span>0</span>
+          <span>10</span>
         </div>
-      )}
+        
+        {/* Display the current rating value */}
+        <div className="text-center text-lg text-[#b8b6b4] mt-2">
+          Current Rating: {ratingValue.toFixed(1)}
+        </div>
+      </div>
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={handleApplyRating}
+          className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-6 py-2 rounded"
+        >
+          Apply
+        </button>
+        <button
+          onClick={handleCancelRating}
+          className="bg-[#b8b6b4] hover:bg-[#8a8a8a] text-white px-6 py-2 rounded"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
-} 
+}
+
