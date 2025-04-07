@@ -2,21 +2,67 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FeaturedGames from "./components/FeaturedGames";
 import GameGrid from "./components/GameGrid";
+import { auth } from "../lib/firebase"; //Import auth
+import { onAuthStateChanged, signOut } from "firebase/auth"; //Import auth functions
 
 export default function StorePage() {
   const [showLogin, setShowLogin] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [user, setUser] = useState(null); // Track user state
+  const [showProfileMenu, setShowProfileMenu] = useState(false); //tr
 
+  // Add auth state observer
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
   const handleSearch = (e) => {
     if (e.key === "Enter") {
       // Here you would typically handle the search
       console.log("Searching for:", searchQuery);
     }
   };
+  // Toggle profile menu
+  const toggleProfileMenu = () => {
+    setShowProfileMenu(!showProfileMenu);
+  };
+  // Close profile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const profileMenu = document.getElementById("profile-menu");
+      const profileButton = document.getElementById("profile-button");
+
+      if (
+        profileMenu &&
+        profileButton &&
+        !profileMenu.contains(event.target) &&
+        !profileButton.contains(event.target)
+      ) {
+        setShowProfileMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const categories = [
     "Action",
@@ -47,7 +93,7 @@ export default function StorePage() {
             />
           </div>
 
-          {/* Navigation Links */}
+          {/* Main Navigation Links */}
           <div className="flex items-center space-x-6 ml-20">
             <Link
               href="/store"
@@ -69,22 +115,70 @@ export default function StorePage() {
             </Link>
           </div>
 
-          {/* Login Button */}
+          {/* Login/Profile Section */}
           <div className="ml-auto">
-            <button
-              onClick={() => setShowLogin(true)}
-              className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-4 py-2 rounded"
-            >
-              Login
-            </button>
+            {user ? (
+              <div className="relative">
+                <button
+                  id="profile-button"
+                  onClick={toggleProfileMenu}
+                  className="flex items-center space-x-2"
+                >
+                  <span className="text-white">
+                    {user.displayName || user.email}
+                  </span>
+                  <div className="w-8 h-8 rounded-full bg-[#5c7e10] flex items-center justify-center">
+                    {user.photoURL ? (
+                      <Image
+                        src={user.photoURL}
+                        alt="Profile"
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <span className="text-white text-sm">
+                        {user.displayName?.charAt(0) || user.email?.charAt(0)}
+                      </span>
+                    )}
+                  </div>
+                </button>
+                {showProfileMenu && (
+                  <div
+                    id="profile-menu"
+                    className="absolute right-0 mt-2 w-48 bg-[#171a21] border border-[#2a3f5a] rounded shadow-lg z-50"
+                  >
+                    <Link
+                      href="/account"
+                      className="block px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a] text-sm"
+                      onClick={() => setShowProfileMenu(false)}
+                    >
+                      Account Details
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a] text-sm"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowLogin(true)}
+                className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-4 py-2 rounded"
+              >
+                Login
+              </button>
+            )}
           </div>
         </div>
       </nav>
 
-      {/* Store Navigation Bar */}
-      <nav className="bg-[#171a21] h-12 flex items-center px-4 border-t border-[#2a3f5a] mt-2.5">
+      {/* Secondary Navigation Bar (Categories, Wishlist, Search) */}
+      <nav className="bg-[#171a21] h-12 flex items-center px-4 border-t border-[#2a3f5a]">
         <div className="container mx-auto flex items-center justify-center">
-          {/* Categories and Search */}
           <div className="flex items-center space-x-4">
             {/* Categories Dropdown */}
             <div className="relative">
