@@ -13,7 +13,7 @@ import {
 import FeaturedGames from "./components/FeaturedGames";
 import GameGrid from "./components/GameGrid";
 import SearchBar from "./components/SearchBar";
-
+import $ from 'jquery';
 export default function StorePage() {
   const [showLogin, setShowLogin] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
@@ -26,6 +26,7 @@ export default function StorePage() {
   const [loginError, setLoginError] = useState("");
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [ratingValue, setRatingValue] = useState(0);
+  const [ratingComparison, setRatingComparison] = useState(""); // "gt", "lt", or ""
 
   // Add auth state observer
   useEffect(() => {
@@ -57,7 +58,30 @@ export default function StorePage() {
   const toggleProfileMenu = () => {
     setShowProfileMenu(!showProfileMenu);
   };
-
+  // Deselects greater than or less than option.
+  useEffect(() => {
+    function handleOutsideClick(e) {
+      const $modal = $("#rating-modal");
+      const $applyButton = $("#apply-rating-btn");
+  
+      if (
+        $modal.length &&
+        !$modal.is(e.target) &&
+        $modal.has(e.target).length === 0 &&
+        !$applyButton.is(e.target) &&
+        $applyButton.has(e.target).length === 0
+      ) {
+        setRatingComparison(""); // Deselect only if clicked outside
+      }
+    }
+  
+    $(document).on("mousedown", handleOutsideClick);
+  
+    return () => {
+      $(document).off("mousedown", handleOutsideClick);
+    };
+  }, []);
+  
   // Close profile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -73,7 +97,7 @@ export default function StorePage() {
         setShowProfileMenu(false);
       }
     };
-
+    
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -375,59 +399,94 @@ export default function StorePage() {
         </div>
       )}
 
-      {/* Rating Modal */}
-      {showRatingModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#171a21] p-6 rounded-lg w-96">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Select Rating</h2>
-              <button
-                onClick={handleCancelRating}
-                className="text-[#b8b6b4] hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="space-y-4">
-              <label className="block text-sm text-[#b8b6b4] mb-1">
-                Rating
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="10"
-                step="0.1"
-                value={ratingValue}
-                onChange={handleRatingChange}
-                className="w-full"
-              />
-              <div className="flex justify-between text-sm">
-                <span>0</span>
-                <span>10</span>
-              </div>
+{/* Rating Modal */}
+{showRatingModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-[#171a21] p-6 rounded-lg w-96" id="rating-modal">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Select Rating</h2>
+        <button
+          onClick={handleCancelRating}
+          className="text-[#b8b6b4] hover:text-white"
+        >
+          ✕
+        </button>
+      </div>
 
-              {/* Display the current rating value */}
-              <div className="text-center text-lg text-[#b8b6b4] mt-2">
-                Current Rating: {ratingValue.toFixed(1)}
-              </div>
-            </div>
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={handleApplyRating}
-                className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-6 py-2 rounded"
-              >
-                Apply
-              </button>
-              <button
-                onClick={handleCancelRating}
-                className="bg-[#b8b6b4] hover:bg-[#8a8a8a] text-white px-6 py-2 rounded"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+      <div className="space-y-4">
+        <label className="block text-sm text-[#b8b6b4] mb-1">
+          Rating
+        </label>
+        <input
+          type="range"
+          min="0"
+          max="10"
+          step="0.1"
+          value={ratingValue}
+          onChange={handleRatingChange}
+          className="w-full"
+        />
+        <div className="flex justify-between text-sm">
+          <span>0</span>
+          <span>10</span>
         </div>
-      )}
+        <div className="text-center text-lg text-[#b8b6b4] mt-2">
+          Current Rating: {ratingValue.toFixed(1)}
+        </div>
+
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={() => setRatingComparison("gt")}
+            className={`px-4 py-2 rounded ${
+              ratingComparison === "gt"
+                ? "bg-[#5c7e10] text-white"
+                : "bg-[#2a3f5a] text-[#b8b6b4] hover:text-white"
+            }`}
+          >
+            Greater Than
+          </button>
+          <button
+            onClick={() => setRatingComparison("lt")}
+            className={`px-4 py-2 rounded ${
+              ratingComparison === "lt"
+                ? "bg-[#5c7e10] text-white"
+                : "bg-[#2a3f5a] text-[#b8b6b4] hover:text-white"
+            }`}
+          >
+            Less Than
+          </button>
+          <button
+            onClick={() => setRatingComparison("")}
+            className={`px-4 py-2 rounded ${
+              ratingComparison === ""
+                ? "bg-[#5c7e10] text-white"
+                : "bg-[#2a3f5a] text-[#b8b6b4] hover:text-white"
+            }`}
+          >
+            Deselect
+          </button>
+        </div>
+      </div>
+
+      <div className="flex justify-between mt-6">
+        <button
+          id="apply-rating-btn"
+          onClick={handleApplyRating}
+          className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-6 py-2 rounded"
+        >
+          Apply
+        </button>
+        <button
+          onClick={handleCancelRating}
+          className="bg-[#b8b6b4] hover:bg-[#8a8a8a] text-white px-6 py-2 rounded"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getAllGames } from '../../lib/gameService';
 import { getGameImageUrl } from '../../lib/firebase';
-
+// Memoization for optimization
+import { useMemo } from 'react';
 const GAMES_PER_PAGE = 10;
 
 export default function GameGrid() {
@@ -41,10 +42,9 @@ export default function GameGrid() {
   }, []);
 
   const totalPages = Math.ceil(games.length / GAMES_PER_PAGE);
-  const currentGames = games.slice(
-    currentPage * GAMES_PER_PAGE,
-    (currentPage + 1) * GAMES_PER_PAGE
-  );
+  const currentGames = useMemo(() => {
+    return games.slice(currentPage * GAMES_PER_PAGE, (currentPage + 1) * GAMES_PER_PAGE);
+  }, [games, currentPage]);
 
   const goToPreviousPage = () => {
     setCurrentPage((prev) => Math.max(0, prev - 1));
