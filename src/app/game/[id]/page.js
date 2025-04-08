@@ -176,7 +176,7 @@ export default function GamePage({ params }) {
 
             {/* System Requirements */}
             {(game.specs?.minimum || game.specs?.recommended) && (
-              <div className="bg-[#171a21] p-6 rounded">
+              <div className="bg-[#171a21] p-6 rounded mb-12">
                 <h2 className="text-xl font-bold mb-4">System Requirements</h2>
                 <div className="grid grid-cols-2 gap-8">
                   {game.specs?.minimum && (
@@ -214,6 +214,35 @@ export default function GamePage({ params }) {
                 </div>
               </div>
             )}
+
+            {/* rating dynamic graph*/}
+            <div className="bg-[#171a21] p-6 rounded mb-6 text-white max-w-md mx-auto">
+              <h2 className="text-xl font-bold mb-4">Reviews Comparison</h2>
+              <div className="grid grid-cols-2 gap-4 text-sm text-[#b8b6b4] mt-4">
+              
+                <div className="flex gap-12 items-end h-48">
+                  {/* Positive Reviews */}
+                  <div className="flex flex-col items-center">
+                    <span className="mb-2 text-lg font-semibold">{game?.positiveReviews}</span>
+                    <div
+                      className="bg-blue-500 w-12 rounded"
+                      style={{ height: `${game?.positiveReviews}px` }} // scale down if needed
+                    />
+                    <span className="mt-2 text-sm">Positive</span>
+                  </div>
+
+                  {/* Negative Reviews */}
+                  <div className="flex flex-col items-center">
+                    <span className="mb-2 text-lg font-semibold">{game?.negativeReviews}</span>
+                    <div
+                      className="bg-red-500 w-12 rounded"
+                      style={{ height: `${game?.negativeReviews * 3}px` }} // scale down if needed
+                    />
+                    <span className="mt-2 text-sm">Negative</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
