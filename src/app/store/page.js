@@ -2,18 +2,30 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; // Added useEffect import
+import { useAuth } from "../lib/AuthContext";
+import { auth } from "../lib/firebase";
+import {
+  signOut,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
 import FeaturedGames from "./components/FeaturedGames";
 import GameGrid from "./components/GameGrid";
-import { auth } from "../lib/firebase"; //Import auth
-import { onAuthStateChanged, signOut } from "firebase/auth"; //Import auth functions
+import SearchBar from "./components/SearchBar";
 
 export default function StorePage() {
   const [showLogin, setShowLogin] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [user, setUser] = useState(null); // Track user state
-  const [showProfileMenu, setShowProfileMenu] = useState(false); //tr
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [ratingValue, setRatingValue] = useState(0);
 
   // Add auth state observer
   useEffect(() => {
@@ -28,20 +40,24 @@ export default function StorePage() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      setShowUserMenu(false); // Close user menu on logout
+      setShowProfileMenu(false); // Close profile menu on logout
     } catch (error) {
       console.error("Error signing out:", error);
     }
   };
+
   const handleSearch = (e) => {
     if (e.key === "Enter") {
-      // Here you would typically handle the search
       console.log("Searching for:", searchQuery);
     }
   };
+
   // Toggle profile menu
   const toggleProfileMenu = () => {
     setShowProfileMenu(!showProfileMenu);
   };
+
   // Close profile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -64,7 +80,21 @@ export default function StorePage() {
     };
   }, []);
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      setShowLogin(false);
+      setEmail("");
+      setPassword("");
+      setLoginError("");
+    } catch (error) {
+      setLoginError(error.message);
+    }
+  };
+
   const categories = [
+    "All",
     "Action",
     "Adventure",
     "RPG",
@@ -76,6 +106,21 @@ export default function StorePage() {
     "Casual",
     "Multiplayer",
   ];
+
+  const handleRatingChange = (event) => {
+    setRatingValue(parseFloat(event.target.value));
+  };
+
+  const handleApplyRating = () => {
+    setShowRatingModal(false);
+    console.log("Applied Rating:", ratingValue);
+    // Add filtering logic here if needed
+  };
+
+  const handleCancelRating = () => {
+    setShowRatingModal(false);
+    setRatingValue(0); // Reset the rating to default
+  };
 
   return (
     <div className="min-h-screen bg-[#1b2838] text-white flex flex-col">
@@ -115,7 +160,7 @@ export default function StorePage() {
             </Link>
           </div>
 
-          {/* Login/Profile Section */}
+          {/* User Menu or Login Button */}
           <div className="ml-auto">
             {user ? (
               <div className="relative">
@@ -163,6 +208,22 @@ export default function StorePage() {
                     </button>
                   </div>
                 )}
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-[#171a21] border border-[#2a3f5a] rounded shadow-lg z-50">
+                    <Link
+                      href="/library"
+                      className="block px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a]"
+                    >
+                      Library
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a]"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <button
@@ -179,7 +240,8 @@ export default function StorePage() {
       {/* Secondary Navigation Bar (Categories, Wishlist, Search) */}
       <nav className="bg-[#171a21] h-12 flex items-center px-4 border-t border-[#2a3f5a]">
         <div className="container mx-auto flex items-center justify-center">
-          <div className="flex items-center space-x-4">
+          {/* Categories and Search */}
+          <div className="flex items-center space-x-6">
             {/* Categories Dropdown */}
             <div className="relative">
               <button
@@ -187,10 +249,18 @@ export default function StorePage() {
                 className="text-[#b8b6b4] hover:text-white text-sm flex items-center"
               >
                 Categories
-                <span className="ml-1">▼</span>
               </button>
               {showCategories && (
                 <div className="absolute top-full left-0 mt-1 bg-[#171a21] border border-[#2a3f5a] rounded shadow-lg z-50 w-48">
+                  <div
+                    className="block px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a] text-sm cursor-pointer"
+                    onClick={() => setShowRatingModal(true)}
+                  >
+                    <span className="text-sm">Rating</span>{" "}
+                    <span style={{ fontSize: "0.5656rem" }}>
+                      (Filter Category by Rating)
+                    </span>
+                  </div>
                   {categories.map((category) => (
                     <Link
                       key={category}
@@ -213,15 +283,8 @@ export default function StorePage() {
             </Link>
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-xs mx-4">
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearch}
-                className="w-full bg-[#316282] text-white px-4 py-2 rounded placeholder-[#b8b6b4] text-sm"
-              />
+            <div className="flex items-center">
+              <SearchBar />
             </div>
           </div>
         </div>
@@ -274,6 +337,8 @@ export default function StorePage() {
                 </label>
                 <input
                   type="text"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-[#316282] text-white px-4 py-2 rounded"
                 />
               </div>
@@ -283,12 +348,17 @@ export default function StorePage() {
                 </label>
                 <input
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-[#316282] text-white px-4 py-2 rounded"
                 />
               </div>
+              {loginError && (
+                <p className="text-red-500 text-sm">{loginError}</p>
+              )}
               <div className="flex justify-between items-center">
                 <button
-                  type="submit"
+                  onClick={handleLogin}
                   className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-6 py-2 rounded"
                 >
                   Login
@@ -301,6 +371,60 @@ export default function StorePage() {
                 </Link>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Rating Modal */}
+      {showRatingModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-[#171a21] p-6 rounded-lg w-96">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Select Rating</h2>
+              <button
+                onClick={handleCancelRating}
+                className="text-[#b8b6b4] hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-4">
+              <label className="block text-sm text-[#b8b6b4] mb-1">
+                Rating
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="10"
+                step="0.1"
+                value={ratingValue}
+                onChange={handleRatingChange}
+                className="w-full"
+              />
+              <div className="flex justify-between text-sm">
+                <span>0</span>
+                <span>10</span>
+              </div>
+
+              {/* Display the current rating value */}
+              <div className="text-center text-lg text-[#b8b6b4] mt-2">
+                Current Rating: {ratingValue.toFixed(1)}
+              </div>
+            </div>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={handleApplyRating}
+                className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-6 py-2 rounded"
+              >
+                Apply
+              </button>
+              <button
+                onClick={handleCancelRating}
+                className="bg-[#b8b6b4] hover:bg-[#8a8a8a] text-white px-6 py-2 rounded"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -3,59 +3,42 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-
-// Using the same games data as GameGrid
-const games = [
-  {
-    id: 1,
-    title: "Elden Ring",
-    genre: "RPG",
-    platform: "PC",
-    rating: 9.5,
-    image: "/elden-ring.jpg",
-  },
-  {
-    id: 2,
-    title: "Cyberpunk 2077",
-    genre: "RPG",
-    platform: "PC",
-    rating: 8.0,
-    image: "/cyberpunk-2077.jpg",
-  },
-  {
-    id: 3,
-    title: "Halo Infinite",
-    genre: "Shooter",
-    platform: "Xbox",
-    rating: 8.5,
-    image: "/halo-infinite.jpg",
-  },
-  {
-    id: 4,
-    title: "God of War",
-    genre: "Action",
-    platform: "PlayStation",
-    rating: 9.8,
-    image: "/god-of-war.jpg",
-  },
-  {
-    id: 5,
-    title: "The Witcher 3",
-    genre: "RPG",
-    platform: "PC",
-    rating: 9.7,
-    image: "/witcher-3.jpg",
-  }
-];
+import { getAllGames } from '../../lib/gameService';
+import { getGameImageUrl } from '../../lib/firebase';
 
 export default function FeaturedGames() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [games, setGames] = useState([]);
+  const [gameImages, setGameImages] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchGames() {
+      const fetchedGames = await getAllGames();
+      const featuredGames = fetchedGames.slice(0, 5);
+      setGames(featuredGames);
+
+      // Fetch header images for featured games
+      const imageUrls = {};
+      await Promise.all(
+        featuredGames.map(async (game) => {
+          const imageUrl = await getGameImageUrl(game.id, 'header');
+          if (imageUrl) {
+            imageUrls[game.id] = imageUrl;
+          }
+        })
+      );
+      setGameImages(imageUrls);
+      setLoading(false);
+    }
+    fetchGames();
+  }, []);
 
   // Auto-advance the carousel every 5 seconds
   useEffect(() => {
     let interval;
-    if (isAutoPlaying) {
+    if (isAutoPlaying && games.length > 0) {
       interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % games.length);
       }, 5000);
@@ -73,14 +56,27 @@ export default function FeaturedGames() {
     setIsAutoPlaying(false);
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5c7e10]"></div>
+      </div>
+    );
+  }
+
+  if (games.length === 0) {
+    return null;
+  }
+
   return (
     <div className="relative">
       <div className="relative h-[400px] rounded-lg overflow-hidden">
         <Image
-          src={games[currentSlide].image}
-          alt={games[currentSlide].title}
+          src={gameImages[games[currentSlide].id] || '/placeholder-game1.svg'}
+          alt=""
           fill
           className="object-cover"
+          priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
         
@@ -88,14 +84,19 @@ export default function FeaturedGames() {
         <div className="absolute bottom-0 left-0 right-0 p-6">
           <h3 className="text-3xl font-bold mb-2">{games[currentSlide].title}</h3>
           <div className="flex space-x-4 text-sm text-[#b8b6b4] mb-4">
-            <span>{games[currentSlide].genre}</span>
+            <span>{games[currentSlide].categories?.join(', ')}</span>
             <span>•</span>
-            <span>{games[currentSlide].platform}</span>
+            <span>{games[currentSlide].platforms?.join(', ')}</span>
             <span>•</span>
-            <span>{games[currentSlide].rating}/10</span>
+            <span>
+              <span className="text-[#66c0f4]">👍 {games[currentSlide].positiveReviews}</span>{' '}
+              <span className="text-[#ff4444]">👎 {games[currentSlide].negativeReviews}</span>
+            </span>
+            <span>•</span>
+            <span>{games[currentSlide].price === 0 ? 'Free' : `$${games[currentSlide].price}`}</span>
           </div>
           <Link 
-            href={`/store/game/${games[currentSlide].id}`}
+            href={`/game/${games[currentSlide].id}`}
             className="inline-block bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-6 py-2 rounded"
           >
             View Details
