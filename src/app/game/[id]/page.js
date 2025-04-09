@@ -14,6 +14,8 @@ export default function GamePage({ params }) {
   const [screenshots, setScreenshots] = useState([]);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const gameId = use(params).id;
+  const [positiveReviews, setPositiveReviews] = useState(game?.positiveReviews || 0);
+  const [negativeReviews, setNegativeReviews] = useState(game?.negativeReviews || 0);
 
   useEffect(() => {
     async function fetchGameData() {
@@ -120,8 +122,8 @@ export default function GamePage({ params }) {
                   <p><span className="font-medium">Release Date:</span> {game.release_date}</p>
                   <p>
                     <span className="font-medium">Reviews:</span>{' '}
-                    <span className="text-[#66c0f4]">👍 {game.positiveReviews}</span>{' '}
-                    <span className="text-[#ff4444]">👎 {game.negativeReviews}</span>
+                    <span className="text-[#66c0f4]">👍 {game.positiveReviews + positiveReviews}</span>{' '}
+                    <span className="text-[#ff4444]">👎 {game.negativeReviews + negativeReviews}</span>
                   </p>
                 </div>
               </div>
@@ -215,6 +217,22 @@ export default function GamePage({ params }) {
               </div>
             )}
 
+            {/*review good or bad*/}
+            <div className="bg-[#171a21] p-6 rounded mb-6 text-white max-w-md mx-auto">
+              <h2 className="text-xl font-bold mb-4">Review the game</h2>
+              <div className="flex gap-6">
+                <button 
+                  className="bg-[#3b3f46] hover:bg-[#4b4f57] text-yellow-300 text-2xl p-4 rounded-lg shadow-md transition-all duration-200"
+                  onClick={() => setPositiveReviews(prev => prev + 1)}
+                  >👍</button>
+                <button 
+                  className="bg-[#3b3f46] hover:bg-[#4b4f57] text-yellow-300 text-2xl p-4 rounded-lg shadow-md transition-all duration-200"
+                  onClick={() => setNegativeReviews(prev => prev + 1)}
+                  >👎</button>
+              </div>
+              
+            </div>
+
             {/* rating dynamic graph*/}
             <div className="bg-[#171a21] p-6 rounded mb-6 text-white max-w-md mx-auto">
               <h2 className="text-xl font-bold mb-4">Reviews Comparison</h2>
@@ -223,20 +241,20 @@ export default function GamePage({ params }) {
                 <div className="flex gap-12 items-end h-48">
                   {/* Positive Reviews */}
                   <div className="flex flex-col items-center">
-                    <span className="mb-2 text-lg font-semibold">{game?.positiveReviews}</span>
+                    <span className="mb-2 text-lg font-semibold">{game.positiveReviews + positiveReviews}</span>
                     <div
                       className="bg-blue-500 w-12 rounded"
-                      style={{ height: `${game?.positiveReviews}px` }} // scale down if needed
+                      style={{ height: `${game.positiveReviews + positiveReviews }px` }}
                     />
                     <span className="mt-2 text-sm">Positive</span>
                   </div>
 
                   {/* Negative Reviews */}
                   <div className="flex flex-col items-center">
-                    <span className="mb-2 text-lg font-semibold">{game?.negativeReviews}</span>
+                    <span className="mb-2 text-lg font-semibold">{game.negativeReviews + negativeReviews}</span>
                     <div
                       className="bg-red-500 w-12 rounded"
-                      style={{ height: `${game?.negativeReviews * 3}px` }} // scale down if needed
+                      style={{ height: `${(game.negativeReviews + negativeReviews) * 3}px` }} 
                     />
                     <span className="mt-2 text-sm">Negative</span>
                   </div>
