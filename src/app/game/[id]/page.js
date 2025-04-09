@@ -178,22 +178,18 @@ export default function GamePage({ params }) {
 
             {/* System Requirements */}
             {(game.specs?.minimum || game.specs?.recommended) && (
-              <div className="bg-[#171a21] p-6 rounded mb-12">
+              <div className="bg-[#171a21] p-6 rounded">
                 <h2 className="text-xl font-bold mb-4">System Requirements</h2>
                 <div className="grid grid-cols-2 gap-8">
                   {game.specs?.minimum && (
                     <div>
                       <h3 className="font-semibold mb-2">Minimum</h3>
                       <div className="space-y-2 text-[#b8b6b4]">
-                        <p><span className="font-medium">OS:</span> {game.specs.minimum.os}</p>
-                        <p><span className="font-medium">Processor:</span> {game.specs.minimum.processor}</p>
-                        <p><span className="font-medium">Memory:</span> {game.specs.minimum.memory}</p>
-                        <p><span className="font-medium">Graphics:</span> {game.specs.minimum.graphics}</p>
-                        <p><span className="font-medium">DirectX:</span> {game.specs.minimum.directX}</p>
-                        <p><span className="font-medium">Storage:</span> {game.specs.minimum.storage}</p>
-                        {game.specs.minimum.sound_card && (
-                          <p><span className="font-medium">Sound Card:</span> {game.specs.minimum.sound_card}</p>
-                        )}
+                        {Object.entries(game.specs.minimum).map(([key, value]) => (
+                          <p key={key}>
+                            <span className="font-medium">{key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}:</span> {value}
+                          </p>
+                        ))}
                       </div>
                     </div>
                   )}
@@ -201,15 +197,11 @@ export default function GamePage({ params }) {
                     <div>
                       <h3 className="font-semibold mb-2">Recommended</h3>
                       <div className="space-y-2 text-[#b8b6b4]">
-                        <p><span className="font-medium">OS:</span> {game.specs.recommended.os}</p>
-                        <p><span className="font-medium">Processor:</span> {game.specs.recommended.processor}</p>
-                        <p><span className="font-medium">Memory:</span> {game.specs.recommended.memory}</p>
-                        <p><span className="font-medium">Graphics:</span> {game.specs.recommended.graphics}</p>
-                        <p><span className="font-medium">DirectX:</span> {game.specs.recommended.directX}</p>
-                        <p><span className="font-medium">Storage:</span> {game.specs.recommended.storage}</p>
-                        {game.specs.recommended.sound_card && (
-                          <p><span className="font-medium">Sound Card:</span> {game.specs.recommended.sound_card}</p>
-                        )}
+                        {Object.entries(game.specs.recommended).map(([key, value]) => (
+                          <p key={key}>
+                            <span className="font-medium">{key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}:</span> {value}
+                          </p>
+                        ))}
                       </div>
                     </div>
                   )}
