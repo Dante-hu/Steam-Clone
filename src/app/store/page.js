@@ -218,7 +218,7 @@ export default function StorePage() {
                     className="absolute right-0 mt-2 w-48 bg-[#171a21] border border-[#2a3f5a] rounded shadow-lg z-50"
                   >
                     <Link
-                      href="/account"
+                      href="/store/account"
                       className="block px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a] text-sm"
                       onClick={() => setShowProfileMenu(false)}
                     >
