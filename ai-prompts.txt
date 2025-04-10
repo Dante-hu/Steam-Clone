@@ -41,6 +41,7 @@ Dante Cornelius:
     "Hey I am builidng a steam clone like app, can you tell me the styling colors used for steam or colors that are close enough to it?"
     "Can you provide me mock data to put on my account page for a steam clone web app"
     "Can you provide me some information I can put on my About page for a steam clone app"
+    "Can you convert my Tailwind CSS stlying to CSS"
 
 Haider Ali:
     "Create a styling guide I can follow to be able to change colors and layout"

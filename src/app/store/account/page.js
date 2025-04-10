@@ -78,11 +78,10 @@ export default function Account() {
         `, // Circular gradient pattern
       }}
     >
-      {/*Overlay for subtle texture */}
-      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-5 z-0"></div>
-
       {/* Main Navbar */}
       <MainNavbar />
+      {/*Overlay for subtle texture */}
+      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-5 z-0"></div>
 
       <div className="w-full max-w-4xl z-10 mt-4">
         {" "}

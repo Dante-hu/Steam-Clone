@@ -1,25 +1,25 @@
 "use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { useAuth } from '../lib/AuthContext';
-import { auth } from '../lib/firebase';
-import { signOut, signInWithEmailAndPassword } from 'firebase/auth';
+import Link from "next/link";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+import { useAuth } from "../lib/AuthContext";
+import { auth } from "../lib/firebase";
+import { signOut, signInWithEmailAndPassword } from "firebase/auth";
 
 export default function MainNavbar() {
   const { user } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
 
   // Close profile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const profileMenu = document.getElementById('profile-menu');
-      const profileButton = document.getElementById('profile-button');
+      const profileMenu = document.getElementById("profile-menu");
+      const profileButton = document.getElementById("profile-button");
 
       if (
         profileMenu &&
@@ -31,9 +31,9 @@ export default function MainNavbar() {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -42,7 +42,7 @@ export default function MainNavbar() {
       await signOut(auth);
       setShowProfileMenu(false);
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
   };
 
@@ -51,9 +51,9 @@ export default function MainNavbar() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       setShowLogin(false);
-      setEmail('');
-      setPassword('');
-      setLoginError('');
+      setEmail("");
+      setPassword("");
+      setLoginError("");
     } catch (error) {
       setLoginError(error.message);
     }
@@ -61,7 +61,7 @@ export default function MainNavbar() {
 
   return (
     <>
-      <nav className="bg-[#171a21] h-20 flex items-center px-4">
+      <nav className="bg-[#171a21] h-20 flex items-center px-4 z-[100]">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-6">
             {/* Logo */}
@@ -90,7 +90,7 @@ export default function MainNavbar() {
             </Link>
             <Link
               href="/store/support"
-              className="text-[#b8b6b4] hover:text-white font-medium"
+              className="text-[#b8b6b4] hover:text-white font-medium mr-4"
             >
               SUPPORT
             </Link>

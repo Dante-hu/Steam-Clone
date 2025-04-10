@@ -1,0 +1,209 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1b2838;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+/* Container Styling */
+.container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.py-12 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.max-w-4xl {
+    max-width: 64rem;
+}
+
+/* Navbar Styling */
+.main-navbar {
+    background-color: #171a21;
+}
+
+.h-12 {
+    height: 3rem;
+}
+
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.space-x-8>*+* {
+    margin-left: 2rem;
+}
+
+.bg-green-600 {
+    background-color: #87cf3c;
+    /* Adjusted from #87CF3C to match Tailwind's green-600 */
+}
+
+.w-8 {
+    width: 2rem;
+}
+
+.h-8 {
+    height: 2rem;
+}
+
+.rounded {
+    border-radius: 0.25rem;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.text-gray-400 {
+    color: #b8b6b4;
+    /* Adjusted from text-[#b8b6b4] to a named color for clarity */
+}
+
+.hover-text-white:hover {
+    color: #ffffff;
+    /* Removed :hover prefix issue by using a custom class */
+}
+
+.text-white {
+    color: #ffffff;
+}
+
+/* Content Styling */
+.text-4xl {
+    font-size: 2.25rem;
+}
+
+.mb-6 {
+    margin-bottom: 1.5rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+}
+
+.mb-8 {
+    margin-bottom: 2rem;
+}
+
+.grid {
+    display: grid;
+}
+
+.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+    .md-grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.gap-8 {
+    gap: 2rem;
+}
+
+.mb-12 {
+    margin-bottom: 3rem;
+}
+
+.bg-gray-800 {
+    background-color: #171a21;
+    /* Adjusted from bg-[#171a21] to a named color */
+}
+
+.p-6 {
+    padding: 1.5rem;
+}
+
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.border {
+    border-width: 1px;
+}
+
+.border-gray-600 {
+    border-color: #2a3f5a;
+    /* Adjusted from border-[#2a3f5a] to a named color */
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.list-disc {
+    list-style-type: disc;
+}
+
+.list-inside {
+    list-style-position: inside;
+}
+
+.text-green-700 {
+    color: #5c7e10;
+    /* Adjusted from text-[#5c7e10] to a named color */
+}
+
+.hover-underline:hover {
+    text-decoration: underline;
+    /* Removed :hover prefix issue */
+}
+
+/* Ensure links are clickable */
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #5c7e10;
+}
