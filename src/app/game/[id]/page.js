@@ -252,30 +252,64 @@ export default function GamePage({ params }) {
             {/* rating dynamic graph*/}
             <div className="bg-[#171a21] p-6 rounded mb-6 text-white max-w-md mx-auto">
               <h2 className="text-xl font-bold mb-4">Reviews Comparison</h2>
-              <div className="grid grid-cols-2 gap-4 text-sm text-[#b8b6b4] mt-4">
-              
-                <div className="flex gap-12 items-end h-48">
-                  {/* Positive Reviews */}
+
+              {/* Compute total reviews and ratios */}
+              {(() => {
+                const total = positiveReviews + game.positiveReviews + negativeReviews + game.negativeReviews;
+                const pos = game.positiveReviews + positiveReviews;
+                const neg = game.negativeReviews + negativeReviews;
+
+                const maxHeight = 200; // max bar height
+                const posRatio = pos / (pos + neg || 1); 
+                const negRatio = neg / (pos + neg || 1);
+
+                const posHeight = posRatio * maxHeight;
+                const negHeight = negRatio * maxHeight;
+
+                return (
+                  <div className="flex gap-12 items-end h-48 justify-center">
+                    {/* Positive Reviews */}
                   <div className="flex flex-col items-center">
+<<<<<<< HEAD
                     <span className="mb-2 text-lg font-semibold">{game.positiveReviews + positiveReviews }</span>
                     <div
                       className="bg-blue-500 w-12 rounded"
                       style={{ height: `${game.positiveReviews + positiveReviews}px` }}
                     />
+=======
+                    <span className="mb-0 text-lg font-semibold">{pos}</span>
+                    <div className="h-40 w-12 bg-gray-800 rounded relative overflow-hidden">
+                      <div
+                        className="absolute bottom-0 left-0 w-full bg-blue-500 transition-all duration-300"
+                        style={{ height: `${posHeight}px` }} 
+                      />
+                    </div>
+>>>>>>> d09d553cbb3b59a5c02207f649e5dc42ab368f26
                     <span className="mt-2 text-sm">Positive</span>
                   </div>
 
                   {/* Negative Reviews */}
                   <div className="flex flex-col items-center">
+<<<<<<< HEAD
                     <span className="mb-2 text-lg font-semibold">{game.negativeReviews + negativeReviews}</span>
                     <div
                       className="bg-red-500 w-12 rounded"
                       style={{ height: `${(game.negativeReviews + negativeReviews ) }px` }} 
                     />
+=======
+                    <span className="mb-0 text-lg font-semibold">{neg}</span>
+                    <div className="h-40 w-12 bg-gray-800 rounded relative overflow-hidden">
+                      <div
+                        className="absolute bottom-0 left-0 w-full bg-red-500 transition-all duration-300"
+                        style={{ height: `${negHeight}px` }} 
+                      />
+                    </div>
+>>>>>>> d09d553cbb3b59a5c02207f649e5dc42ab368f26
                     <span className="mt-2 text-sm">Negative</span>
                   </div>
-                </div>
-              </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
