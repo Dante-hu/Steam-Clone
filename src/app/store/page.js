@@ -13,7 +13,9 @@ import {
 import FeaturedGames from "./components/FeaturedGames";
 import GameGrid from "./components/GameGrid";
 import SearchBar from "./components/SearchBar";
+import MainNavbar from "../components/MainNavbar";
 import $ from "jquery";
+
 export default function StorePage() {
   const [showLogin, setShowLogin] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
@@ -149,119 +151,9 @@ export default function StorePage() {
   return (
     <div className="min-h-screen bg-[#1b2838] text-white flex flex-col">
       {/* Main Navigation Bar */}
-      <nav className="bg-[#171a21] h-20 flex items-center px-4">
-        <div className="container mx-auto flex items-center">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Image
-              src="/placeholder-logo.svg"
-              alt="Steam Clone Logo"
-              width={40}
-              height={40}
-              className="mr-4"
-            />
-          </div>
+      <MainNavbar />
 
-          {/* Main Navigation Links */}
-          <div className="flex items-center space-x-6 ml-20">
-            <Link
-              href="/store"
-              className="text-[#b8b6b4] hover:text-white font-medium"
-            >
-              STORE
-            </Link>
-            <Link
-              href="/store/about"
-              className="text-[#b8b6b4] hover:text-white font-medium"
-            >
-              ABOUT
-            </Link>
-            <Link
-              href="/store/support"
-              className="text-[#b8b6b4] hover:text-white font-medium"
-            >
-              SUPPORT
-            </Link>
-          </div>
-
-          {/* User Menu or Login Button */}
-          <div className="ml-auto">
-            {user ? (
-              <div className="relative">
-                <button
-                  id="profile-button"
-                  onClick={toggleProfileMenu}
-                  className="flex items-center space-x-2"
-                >
-                  <span className="text-white">
-                    {user.displayName || user.email}
-                  </span>
-                  <div className="w-8 h-8 rounded-full bg-[#5c7e10] flex items-center justify-center">
-                    {user.photoURL ? (
-                      <Image
-                        src={user.photoURL}
-                        alt="Profile"
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <span className="text-white text-sm">
-                        {user.displayName?.charAt(0) || user.email?.charAt(0)}
-                      </span>
-                    )}
-                  </div>
-                </button>
-                {showProfileMenu && (
-                  <div
-                    id="profile-menu"
-                    className="absolute right-0 mt-2 w-48 bg-[#171a21] border border-[#2a3f5a] rounded shadow-lg z-50"
-                  >
-                    <Link
-                      href="/store/account"
-                      className="block px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a] text-sm"
-                      onClick={() => setShowProfileMenu(false)}
-                    >
-                      Account Details
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a] text-sm"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-                {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-[#171a21] border border-[#2a3f5a] rounded shadow-lg z-50">
-                    <Link
-                      href="/library"
-                      className="block px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a]"
-                    >
-                      Library
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-[#b8b6b4] hover:text-white hover:bg-[#2a3f5a]"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowLogin(true)}
-                className="bg-[#5c7e10] hover:bg-[#6c8c1e] text-white px-4 py-2 rounded"
-              >
-                Login
-              </button>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      {/* Secondary Navigation Bar (Categories, Wishlist, Search) */}
+      {/* Store Navigation Bar */}
       <nav className="bg-[#171a21] h-12 flex items-center px-4 border-t border-[#2a3f5a]">
         <div className="container mx-auto flex items-center justify-center">
           {/* Categories and Search */}
@@ -318,7 +210,28 @@ export default function StorePage() {
       <main className="flex-grow">
         {/* Featured Games Section */}
         <div className="container mx-auto px-4 mt-8">
-          <h2 className="text-2xl font-bold mb-4">Featured Games</h2>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-2xl font-bold text-white">Featured Games</h1>
+            <Link
+              href="/store/wishlist"
+              className="text-white hover:text-gray-300 flex items-center space-x-2"
+            >
+              <span>View Wishlist</span>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+            </Link>
+          </div>
           <FeaturedGames />
         </div>
 

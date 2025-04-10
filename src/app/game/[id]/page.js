@@ -1,28 +1,35 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { use } from 'react';
 import Image from 'next/image';
 import { getGameById } from '../../lib/gameService';
 import { getGameImageUrl, getGameGalleryUrls } from '../../lib/firebase';
+import { useAuth } from '../../lib/AuthContext';
+import MainNavbar from '../../components/MainNavbar';
 
 export default function GamePage({ params }) {
   const router = useRouter();
+  const unwrappedParams = use(params);
+  const gameId = unwrappedParams.id;
+  const { user, addToWishlist, removeFromWishlist, isInWishlist } = useAuth();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [boxArtImage, setBoxArtImage] = useState(null);
   const [screenshots, setScreenshots] = useState([]);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const gameId = use(params).id;
   const [positiveReviews, setPositiveReviews] = useState(game?.positiveReviews || 0);
   const [negativeReviews, setNegativeReviews] = useState(game?.negativeReviews || 0);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   useEffect(() => {
-    async function fetchGameData() {
+    const fetchGame = async () => {
       try {
         const gameData = await getGameById(gameId);
         console.log('Game Data:', gameData);
         setGame(gameData);
+        setIsWishlisted(isInWishlist(gameId));
 
         // Fetch box art image
         const boxArtUrl = await getGameImageUrl(gameId, 'boxart');
@@ -33,15 +40,29 @@ export default function GamePage({ params }) {
         // Fetch numbered screenshots
         const screenshotUrls = await getGameGalleryUrls(gameId);
         setScreenshots(screenshotUrls);
-
-        setLoading(false);
       } catch (error) {
         console.error('Error fetching game data:', error);
+      } finally {
         setLoading(false);
       }
+    };
+
+    fetchGame();
+  }, [gameId, isInWishlist]);
+
+  const handleWishlistClick = async () => {
+    if (!user) {
+      // You might want to redirect to login or show a login prompt
+      return;
     }
-    fetchGameData();
-  }, [gameId]);
+
+    if (isWishlisted) {
+      await removeFromWishlist(gameId);
+    } else {
+      await addToWishlist(gameId);
+    }
+    setIsWishlisted(!isWishlisted);
+  };
 
   if (loading) {
     return (
@@ -98,12 +119,21 @@ export default function GamePage({ params }) {
                 <div className="text-2xl font-bold mb-3">
                   {game.price === 0 ? 'Free' : `$${game.price}`}
                 </div>
-                <button className="w-full bg-[#5c7e10] hover:bg-[#6c8c1e] text-white py-2 rounded mb-2">
-                  Add to Cart
-                </button>
-                <button className="w-full bg-[#2a3f5a] hover:bg-[#3a4f6a] text-white py-2 rounded">
-                  Add to Wishlist
-                </button>
+                <div className="flex space-x-4 mt-6">
+                  <button className="bg-[#5C7E10] hover:bg-[#6B8F11] text-white px-8 py-3 rounded font-medium">
+                    Add to Cart
+                  </button>
+                  <button
+                    onClick={handleWishlistClick}
+                    className={`${
+                      isWishlisted
+                        ? 'bg-[#2A3F5A] hover:bg-[#3A4F6A]'
+                        : 'bg-[#2A3F5A] hover:bg-[#3A4F6A]'
+                    } text-white px-8 py-3 rounded font-medium`}
+                  >
+                    {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
