@@ -1,3 +1,5 @@
+this is created through prompt look at Haider ali 1st prompt from ai-prompts.txt
+
 # Steam Clone Styling Guide
 
 ## Navigation Bars

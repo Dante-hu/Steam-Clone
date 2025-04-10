@@ -13,3 +13,15 @@ Led the implementation of the review buttons and the review graph. Developed fun
 
 Nikolas Foster(Frontend):
 Worked on Categories (which partially works), helped with graph, typescript support, Used Jquery Implementation.
+
+
+Haider Ali (Frontend)
+Developed and implemented functionality for the main store page, including features such as user login,
+a carousel showcasing featured games, and paginated game listings (10 games per page). 
+Interactive game images allow users to navigate to individual game pages. Added routing to the wishlist page, 
+search page, and game detail page.
+Designed and built the search page with real-time filtering based on selected categories and entered game names.
+Created the game detail page, which displays comprehensive information about each game by integrating the front end with the back end. 
+Also implemented the ability for users to add games to their wishlist.
+Developed the wishlist page, which displays brief game information and allows users to remove games from their wishlist.
+Added login and logout functionality to enhance user session management.
