@@ -171,13 +171,13 @@ export default function StorePage() {
               STORE
             </Link>
             <Link
-              href="/about"
+              href="/store/about"
               className="text-[#b8b6b4] hover:text-white font-medium"
             >
               ABOUT
             </Link>
             <Link
-              href="/support"
+              href="/store/support"
               className="text-[#b8b6b4] hover:text-white font-medium"
             >
               SUPPORT

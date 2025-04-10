@@ -1,0 +1,12 @@
+Ali Hu (FullStack): 
+Created and populated the firebase database with game info, user profiles,  user emails/passwords, reviews and image assets for games and user profiles using NoSQL
+Helped with backend database read/write requests, setting up dynamic routing with game_ids, and server-side login authentication
+
+Dante Cornelius(Frontend):
+Added functionality for user to register their account and login/logout
+Created register form, about page, and support page.
+
+Owais Fawad (FullStack):
+Backend support, and implementation of dynamic bar graph for the reviews
+
+Nikolas Foster(Frontend):
