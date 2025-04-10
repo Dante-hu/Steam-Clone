@@ -10,3 +10,4 @@ Owais Fawad (FullStack):
 Backend support, and implementation of dynamic bar graph for the reviews
 
 Nikolas Foster(Frontend):
+Worked on Categories (which partially works), helped with graph, typescript support, Used Jquery Implementation.
