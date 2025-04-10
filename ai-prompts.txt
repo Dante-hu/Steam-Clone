@@ -1,0 +1,43 @@
+Ali Hu:
+    I want you to randomly generate a set of 35 of these JSON objects that I wish to store in a database. Follow each of the comments for each key PRECISELY 
+
+data = {
+        id: docId, //don't change this
+        userName: "", //random set of 10 numbers/letters
+        realName: "", // leave it empty
+        location: "", //leave it empty
+        gamesOwned: 20, //always 20
+        gameData:{
+          ids: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], //don't change this
+          hours:{ // randomize value between 10 to 300 hours at 1 decimal place for all 20 keys
+            1: 16.0,
+            2: 15.5,
+            3: 263.0,
+            4: 33.2,
+            5: 90.3,
+            6: 25.5,
+            7: 17.2,
+            8: 27.0,
+            9: 53.9,
+            10: 40.3,
+            11: 2.3,
+            12: 830.7,
+            13: 125.9,
+            14: 77.2,
+            15: 22.4,
+            16: 12.1,
+            17: 125.7,
+            18: 12.6,
+            19: 12.2,
+            20: 23.3,
+          }
+        },
+        bio: "<p>No information given.</p>",//don't change this
+        friends: [], //don't change this
+        recent: [1,7,17], //randomize 3 values between 1 to 20 here
+        commentUsers: [], //don't change this
+        commentData:{} //don't change this
+Dante Cornelius:
+    "Hey I am builidng a steam clone like app, can you tell me the styling colors used for steam or colors that are close enough to it?"
+    "Can you provide me mock data to put on my account page for a steam clone web app"
+    "Can you provide me some information I can put on my About page for a steam clone app"

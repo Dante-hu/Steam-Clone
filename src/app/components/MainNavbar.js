@@ -23,10 +23,16 @@ export default function MainNavbar() {
               <Link href="/store" className="text-[#b8b6b4] hover:text-white">
                 STORE
               </Link>
-              <Link href="/about" className="text-[#b8b6b4] hover:text-white">
+              <Link
+                href="/store/about"
+                className="text-[#b8b6b4] hover:text-white"
+              >
                 ABOUT
               </Link>
-              <Link href="/support" className="text-[#b8b6b4] hover:text-white">
+              <Link
+                href="/store/support"
+                className="text-[#b8b6b4] hover:text-white"
+              >
                 SUPPORT
               </Link>
             </div>
