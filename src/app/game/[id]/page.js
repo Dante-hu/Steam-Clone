@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { getGameById } from '../../lib/gameService';
 import { getGameImageUrl, getGameGalleryUrls } from '../../lib/firebase';
+import { increment, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
 
 export default function GamePage({ params }) {
   const router = useRouter();
@@ -42,6 +44,28 @@ export default function GamePage({ params }) {
     }
     fetchGameData();
   }, [gameId]);
+
+
+  const handleReview = async (type) => {
+    const gameRef = doc(db, "game_info", gameId);
+
+    try {
+      await updateDoc(gameRef, {
+        [type === "positive" ? "positiveReviews" : "negativeReviews"] : increment(1)
+      });
+
+      if (type === "positive"){
+        setPositiveReviews((prev) => prev + 1);
+      }
+      else{
+        setNegativeReviews((prev) => prev + 1);
+      }
+    }
+    catch (error) {
+      console.error("Error updating review:", error);
+    }
+
+  }
 
   if (loading) {
     return (
@@ -178,7 +202,7 @@ export default function GamePage({ params }) {
 
             {/* System Requirements */}
             {(game.specs?.minimum || game.specs?.recommended) && (
-              <div className="bg-[#171a21] p-6 rounded">
+              <div className="bg-[#171a21] p-6 mb-6 rounded">
                 <h2 className="text-xl font-bold mb-4">System Requirements</h2>
                 <div className="grid grid-cols-2 gap-8">
                   {game.specs?.minimum && (
@@ -215,11 +239,11 @@ export default function GamePage({ params }) {
               <div className="flex gap-6">
                 <button 
                   className="bg-[#3b3f46] hover:bg-[#4b4f57] text-yellow-300 text-2xl p-4 rounded-lg shadow-md transition-all duration-200"
-                  onClick={() => setPositiveReviews(prev => prev + 1)}
+                  onClick={() => handleReview("positive")}
                   >👍</button>
                 <button 
                   className="bg-[#3b3f46] hover:bg-[#4b4f57] text-yellow-300 text-2xl p-4 rounded-lg shadow-md transition-all duration-200"
-                  onClick={() => setNegativeReviews(prev => prev + 1)}
+                  onClick={() => handleReview("negative")}
                   >👎</button>
               </div>
               
@@ -233,10 +257,10 @@ export default function GamePage({ params }) {
                 <div className="flex gap-12 items-end h-48">
                   {/* Positive Reviews */}
                   <div className="flex flex-col items-center">
-                    <span className="mb-2 text-lg font-semibold">{game.positiveReviews + positiveReviews}</span>
+                    <span className="mb-2 text-lg font-semibold">{game.positiveReviews + positiveReviews }</span>
                     <div
                       className="bg-blue-500 w-12 rounded"
-                      style={{ height: `${game.positiveReviews + positiveReviews }px` }}
+                      style={{ height: `${game.positiveReviews + positiveReviews}px` }}
                     />
                     <span className="mt-2 text-sm">Positive</span>
                   </div>
@@ -246,7 +270,7 @@ export default function GamePage({ params }) {
                     <span className="mb-2 text-lg font-semibold">{game.negativeReviews + negativeReviews}</span>
                     <div
                       className="bg-red-500 w-12 rounded"
-                      style={{ height: `${(game.negativeReviews + negativeReviews) * 3}px` }} 
+                      style={{ height: `${(game.negativeReviews + negativeReviews ) }px` }} 
                     />
                     <span className="mt-2 text-sm">Negative</span>
                   </div>
