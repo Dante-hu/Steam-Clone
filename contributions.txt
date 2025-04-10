@@ -7,7 +7,9 @@ Added functionality for user to register their account and login/logout
 Created register form, about page, and support page.
 
 Owais Fawad (FullStack):
-Backend support, and implementation of dynamic bar graph for the reviews
+Assisted with backend development, ensuring proper link functionality and accurate dynamic routing logic. Addressed and resolved backend issues related to item placement on the main page, making sure content consistently rendered in the correct locations.
+
+Led the implementation of the review buttons and the review graph. Developed functionality for user upvotes and downvotes on games, ensuring each interaction updated the database in real time. Also implemented dynamic UI updates so that both the review count and the graph reflected changes instantly, enhancing the user experience and feedback responsiveness.
 
 Nikolas Foster(Frontend):
 Worked on Categories (which partially works), helped with graph, typescript support, Used Jquery Implementation.
